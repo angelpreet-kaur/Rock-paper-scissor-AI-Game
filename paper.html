@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rock Paper Scissors AI Game</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0a0f24, #1c1f3a);
+      color: #f5f5f5;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      margin-top: 30px;
+      color: #00d4ff;
+      text-shadow: 0 0 10px #00d4ff;
+    }
+
+    .game-container {
+      margin: 40px auto;
+      padding: 20px;
+      width: 350px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    button {
+      background: #00d4ff;
+      color: #000;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #fff;
+      color: #00d4ff;
+      transform: scale(1.05);
+    }
+
+    .results {
+      margin-top: 25px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .scoreboard {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-around;
+      font-size: 16px;
+    }
+
+    .history {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    footer {
+      margin-top: 40px;
+      color: #aaa;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Rock, Paper, Scissors — AI Game</h1>
+
+  <div class="game-container">
+    <div class="buttons">
+      <button onclick="play('rock')">✊ Rock</button>
+      <button onclick="play('paper')">✋ Paper</button>
+      <button onclick="play('scissors')">✌️ Scissors</button>
+    </div>
+
+    <div class="results" id="resultBox">
+      Make your move!
+    </div>
+
+    <div class="scoreboard">
+      <div>Player: <span id="playerScore">0</span></div>
+      <div>AI: <span id="aiScore">0</span></div>
+      <div>Ties: <span id="tieScore">0</span></div>
+    </div>
+
+    <div class="history" id="historyBox">
+      History: none yet.
+    </div>
+  </div>
+
+  <footer>
+    💡 The AI adapts to your most frequent move.
+  </footer>
+
+  <script>
+    let history = [];
+    let playerScore = 0, aiScore = 0, tieScore = 0;
+
+    function getAIMove() {
+      if (history.length < 3) {
+        const random = Math.floor(Math.random() * 3);
+        return ['rock', 'paper', 'scissors'][random];
+      }
+
+      const rockCount = history.filter(x => x === 'rock').length;
+      const paperCount = history.filter(x => x === 'paper').length;
+      const scissorCount = history.filter(x => x === 'scissors').length;
+
+      let mostPlayed = 'rock';
+      if (paperCount >= rockCount && paperCount >= scissorCount)
+        mostPlayed = 'paper';
+      else if (scissorCount >= rockCount && scissorCount >= paperCount)
+        mostPlayed = 'scissors';
+
+      if (mostPlayed === 'rock') return 'paper';
+      if (mostPlayed === 'paper') return 'scissors';
+      return 'rock';
+    }
+
+    function play(playerMove) {
+      const aiMove = getAIMove();
+      let resultText = "";
+
+      if (playerMove === aiMove) {
+        resultText = `It's a tie! Both chose ${playerMove}.`;
+        tieScore++;
+      } else if (
+        (playerMove === 'rock' && aiMove === 'scissors') ||
+        (playerMove === 'paper' && aiMove === 'rock') ||
+        (playerMove === 'scissors' && aiMove === 'paper')
+      ) {
+        resultText = `🎉 You win! ${playerMove} beats ${aiMove}.`;
+        playerScore++;
+      } else {
+        resultText = `🤖 AI wins! ${aiMove} beats ${playerMove}.`;
+        aiScore++;
+      }
+
+      history.push(playerMove);
+      updateDisplay(resultText, aiMove);
+    }
+
+    function updateDisplay(resultText, aiMove) {
+      document.getElementById('resultBox').innerHTML = resultText;
+      document.getElementById('playerScore').innerText = playerScore;
+      document.getElementById('aiScore').innerText = aiScore;
+      document.getElementById('tieScore').innerText = tieScore;
+      document.getElementById('historyBox').innerText =
+        "History: " + history.join(", ");
+    }
+  </script>
+</body>
+</html>
